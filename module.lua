@@ -1,11 +1,13 @@
---[==[
+--[[
 
 	Simple Lua Bytecode Obfuscator
 
 	This code is licensed under the MIT License.
 	Copyright (c) 2023 Reboy / M0dder
+    Copyright (c) 2026 Nexusdevy
 
 	Made by Reboy / M0dder (Discord: kskreboy#4721)
+    Modified by Nexusdevy
 
 	Obfuscator Supported Versions:
 	Only Lua 5.1
@@ -70,7 +72,7 @@
 	- FiOne LBI (created by same author as Rerubi) - https://github.com/Rerumu/FiOne
 	- ARCFOUR implementation in pure Lua - Rob Kendrick (rjek)
 
---]==]
+--]]
 local obversion = "v1.3.1"
 
 if game ~= nil and typeof ~= nil then
@@ -221,6 +223,12 @@ local function aesdec(code, key)
 end
 
 local function genpass(l)
+    -- Melhoria na semente usando tempo de CPU, memoria e tempo de sistema
+    math.randomseed(os.time() + math.floor(os.clock() * 1000000) + tonumber(tostring({}):sub(8), 16))
+    
+    -- "Warm-up": Descarta os primeiros resultados para quebrar padroes iniciais do PRNG
+    for i = 1, 10 do math.random() end
+
 	local pass = ""
 	for i = 1, l do
 		local a = math.random(1,#morecharset)
@@ -249,6 +257,9 @@ if silentmode == false then
 	)
 end
 M.crypt = function(source, options)
+    -- Semente global aprimorada ao iniciar a criptografia
+    math.randomseed(os.time() + (os.clock() * 1000))
+
 	if silentmode == false and #source >= 2000000 then
 		print("WARNING: Your script seems too big, the process may be crashed or the code may be corrupted.")
 	end
